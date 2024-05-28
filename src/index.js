@@ -1,5 +1,7 @@
 require('dotenv').config();
 const { Client, IntentsBitField } = require('discord.js');
+const mongoose = require('mongoose');
+const eventHandler = require('./handlers/eventHandler');
 
 const client = new Client({ 
     intents: [ 
@@ -10,20 +12,15 @@ const client = new Client({
     ]
 });
 
-client.on('ready', () => {
-    console.log(`${client.user.tag} is online.`);
-});
-
-client.on('interactionCreate', (interaction) => {
-    if (!interaction.isChatInputCommand()) return; 
-    console.log(interaction.commandName);
-
-    if (interaction.commandName === 'add') {
-        const num1 = interaction.options.getNumber('num1');
-        const num2 = interaction.options.getNumber('num2');
-        const sum = num1 + num2;
-        interaction.reply(`The sum of ${num1} and ${num2} is ${sum}`);
+(() => {
+    try {
+        mongoose.connect(process.env.MONGODB_URI);
+        console.log('Connected to MongoDB');
+        eventHandler(client);
+    
+    } catch (error) {
+        console.error('Error connecting to MongoDB');
     }
-});
+})();
 
 client.login(process.env.TOKEN);
