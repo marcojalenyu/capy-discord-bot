@@ -1,4 +1,10 @@
-module.exports = async (client, guildId) => {
+/**
+ * This function retrieves the application commands for a bot.
+ * @param {*} client 
+ * @param {*} guildId: can be null 
+ * @returns 
+ */
+module.exports = async (client, guildId = null) => {
     let applicationCommands;
 
     if (guildId) {

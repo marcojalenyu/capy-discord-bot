@@ -7,6 +7,7 @@ module.exports = {
     // deleted: Boolean,
 
     callback: (client, interaction) => {
+        console.log(interaction)
         interaction.reply(`Pong! ${client.ws.ping}ms`);
     }
 }
