@@ -74,12 +74,14 @@ module.exports = {
                 const description = interaction.options.getString('description');
                 const type = interaction.options.getString('type');
 
+                // Split the deadline into month, day, and year
+                const [month, day, year] = deadline.split('/');
                 // Create a new reminder
                 const newReminder = new Reminder({
                     listId: list._id,
                     category: category,
                     name: name,
-                    deadline: new Date(deadline),
+                    deadline: new Date(Date.UTC(year, month - 1, day)),
                     description: description || '',
                     type: type || 'task'
                 });
