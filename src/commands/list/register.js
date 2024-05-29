@@ -6,12 +6,12 @@ const List = require("../../models/List")
  */
 module.exports = {
     name: 'register',
-    description: 'Register/create a list (only 1/server allowed).',
+    description: 'Initialize a list (only one allowed per server).',
     
     callback: async ( client, interaction) => {
         try {
-            const list = await List.findOne({ guildId: interaction.guildId }) || await List.findOne({ userId: interaction.user.id });
             // Check if the user already has a list registed in the database
+            const list = await List.findOne({ guildId: interaction.guildId }) || await List.findOne({ userId: interaction.user.id });
             // If they do, reply with an error message and return
             // If they don't, create a new list in the database
             if (list) {
@@ -33,7 +33,7 @@ module.exports = {
                 interaction.reply({ content: "List registered." });
             }
         } catch (e) {
-            console.log("There was an error registering the list.");
+            interaction.reply({ content: "There was an error registering the list." });
         }
         
     }
