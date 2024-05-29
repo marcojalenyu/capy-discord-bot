@@ -19,6 +19,10 @@ const listSchema = new Schema({
         }],
         default: [],
         required: true
+    },
+    remindTime: {
+        type: String,
+        default: '09:00'
     }
 });
 

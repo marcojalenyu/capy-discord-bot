@@ -30,7 +30,7 @@ module.exports = {
                     newList.userId = interaction.user.id;
                 }
                 await newList.save();
-                interaction.reply({ content: "List registered." });
+                interaction.reply({ content: "List registered. Daily reminder time: 9:00 AM." });
             }
         } catch (e) {
             interaction.reply({ 
