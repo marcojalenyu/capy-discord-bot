@@ -5,11 +5,6 @@ const { description } = require('../commands/misc/ping');
  * This schema represents a Reminder.
  */
 const reminderSchema = new Schema({
-    id: {
-        type: String,
-        required: true,
-        unique: true
-    },
     listId: {
         type: Schema.Types.ObjectId,
         required: true,
@@ -17,6 +12,7 @@ const reminderSchema = new Schema({
     },
     category: {
         type: String,
+        required: true
     },
     name: {
         type: String,
@@ -24,7 +20,6 @@ const reminderSchema = new Schema({
     },
     description: {
         type: String,
-        default: ''
     },
     deadline: {
         type: Date,
@@ -32,7 +27,6 @@ const reminderSchema = new Schema({
     },
     type : {
         type: String,
-        default: 'task'
     },
 });
 
