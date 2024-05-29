@@ -98,13 +98,17 @@ module.exports = {
 
                 // Save the reminder in the database
                 await newReminder.save();
-                list.reminders.push(newReminder);
+                list.reminders.push(newReminder._id);
                 await list.save();
 
                 interaction.reply({ content: `Reminder "${category} - ${name}" added.` });
             }
         } catch (e) {
             console.log(e);
+            interaction.reply({ 
+                content: "There was an error adding the reminder.",
+                ephemeral: true
+            });
         }
     }
 }

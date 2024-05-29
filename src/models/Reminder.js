@@ -1,5 +1,4 @@
 const { Schema, model } = require('mongoose');
-const { description } = require('../commands/misc/ping');
 
 /**
  * This schema represents a Reminder.

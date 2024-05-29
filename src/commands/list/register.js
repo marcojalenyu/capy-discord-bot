@@ -33,7 +33,10 @@ module.exports = {
                 interaction.reply({ content: "List registered." });
             }
         } catch (e) {
-            interaction.reply({ content: "There was an error registering the list." });
+            interaction.reply({ 
+                content: "There was an error registering the list.",
+                ephemeral: true
+            });
         }
         
     }
