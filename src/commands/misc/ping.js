@@ -4,7 +4,7 @@ module.exports = {
     // devOnly: Boolean,
     // testOnly: Boolean,
     // options; Object[],
-    // deleted: Boolean,
+    // deleted: true,
 
     callback: (client, interaction) => {
         console.log(interaction)

@@ -5,20 +5,20 @@ const { Schema, model } = require('mongoose');
  * It is unique per Discord server.
  */
 const listSchema = new Schema({
-    id: {
-        type: String,
-        required: true,
-        unique: true
-    },    
     guildId: {
         type: String,
-        required: true
+        default: null
+    },
+    userId: {
+        type: String,
+        default: null
     },
     reminders: {
         type: [{
             type: Schema.Types.ObjectId,
             ref: 'Reminder'
         }],
+        default: [],
         required: true
     }
 });
