@@ -16,7 +16,6 @@ const listSchema = new Schema({
     reminders: {
         type: [{
             type: Schema.Types.ObjectId,
-            ref: 'Reminder'
         }],
         default: [],
         required: true
