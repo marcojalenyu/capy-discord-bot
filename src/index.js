@@ -3,7 +3,7 @@ const { Client, IntentsBitField } = require('discord.js');
 const List = require('./models/List');
 const mongoose = require('mongoose');
 const eventHandler = require('./handlers/eventHandler');
-const sendReminders = require('./utils/sendReminders');
+const updateReminders = require('./utils/updateReminders');
 
 const client = new Client({ 
     intents: [ 
@@ -24,12 +24,12 @@ const client = new Client({
         setInterval(async () => {
             const now = new Date();
             const currentTime = `${now.getHours()}:${now.getMinutes()}`;
-            console.log(currentTime);
-
             const lists = await List.find({ remindTime: currentTime });
+            console.log(lists)
 
             for (const list of lists) {
-                sendReminders(client, list);
+                console.log("Updating reminders for list: ", list._id);
+                updateReminders(client, list);
             }
             
         }, 60 * 1000);

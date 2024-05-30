@@ -66,11 +66,13 @@ module.exports = async (client, list) => {
             message += `\n`;
         }
 
-        // Send the message to the user or server
-        if (list.userId) {
-            client.users.cache.get(list.userId).send(message);
+        // Send a message to the channel where the list is registered
+        if (list.guildId) {
+            const channel = await client.channels.fetch(list.channelId);
+            channel.send(message);
         } else {
-            client.channels.cache.get(list.channelId).send(message);
+            const user = await client.users.fetch(list.userId);
+            user.send(message);
         }
     }
 }
