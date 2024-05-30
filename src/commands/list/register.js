@@ -6,7 +6,7 @@ const List = require("../../models/List")
  */
 module.exports = {
     name: 'register',
-    description: 'Initialize a list (only one allowed per server).',
+    description: 'Create a list and send daily reminders in this channel.',
     
     callback: async ( client, interaction) => {
         try {
@@ -26,6 +26,7 @@ module.exports = {
                 const newList = new List();
                 if (interaction.guildId) {
                     newList.guildId = interaction.guildId;
+                    newList.channelId = interaction.channelId;
                 } else {
                     newList.userId = interaction.user.id;
                 }

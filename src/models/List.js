@@ -13,6 +13,10 @@ const listSchema = new Schema({
         type: String,
         default: null
     },
+    channelId: {
+        type: String,
+        default: null
+    },
     reminders: {
         type: [{
             type: Schema.Types.ObjectId,
