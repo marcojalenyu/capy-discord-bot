@@ -1,4 +1,5 @@
-const { testServer } = require('../../../config.json');
+require('dotenv').config();
+const testServer = process.env.TEST_SERVER;
 const areCommandsDifferent = require('../../utils/areCommandsDifferent');
 const getApplicationCommands = require('../../utils/getApplicationCommands');
 const getLocalCommands = require('../../utils/getLocalCommands');

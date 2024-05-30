@@ -1,4 +1,6 @@
-const { devs, testServer } = require('../../../config.json');
+require('dotenv').config();
+const devs = process.env.DEVS.split(',');
+const testServer = process.env.TEST_SERVER;
 const getLocalCommands = require('../../utils/getLocalCommands');
 
 module.exports = async (client, interaction) => {
