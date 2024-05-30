@@ -25,7 +25,6 @@ const client = new Client({
             const now = new Date();
             const currentTime = `${now.getHours()}:${now.getMinutes()}`;
             const lists = await List.find({ remindTime: currentTime });
-            console.log(lists)
 
             for (const list of lists) {
                 console.log("Updating reminders for list: ", list._id);
