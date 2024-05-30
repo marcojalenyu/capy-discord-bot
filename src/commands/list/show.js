@@ -22,7 +22,7 @@ module.exports = {
         try {
             const list = await List.findOne({ guildId: interaction.guildId }) || await List.findOne({ userId: interaction.user.id });
             // If the list is empty, return a message to the user
-            if (!list) {
+            if (!list || interaction.guildId != list.guildId) {
                 interaction.reply({ 
                     content: "You do not have a list registered.",
                     ephemeral: true

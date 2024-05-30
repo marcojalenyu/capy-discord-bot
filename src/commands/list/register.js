@@ -14,7 +14,7 @@ module.exports = {
             const list = await List.findOne({ guildId: interaction.guildId }) || await List.findOne({ userId: interaction.user.id });
             // If they do, reply with an error message and return
             // If they don't, create a new list in the database
-            if (list) {
+            if (list && interaction.guildId == list.guildId) {
                 interaction.reply({ 
                     content: "You already have a list registered.",
                     ephemeral: true
