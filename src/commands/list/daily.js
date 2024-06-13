@@ -7,7 +7,7 @@ module.exports = {
     options: [
         {
             name: 'time',
-            description: 'The new daily reminder time (HH:MM).',
+            description: 'Follow HH:MM AM/PM format.',
             type: ApplicationCommandOptionType.String,
             required: true
         }
@@ -23,23 +23,38 @@ module.exports = {
                 });
                 return;
             } else {
+                // Get the time from the interaction
                 const time = interaction.options.getString('time');
                 
-                // Check if the time is in the correct format
-                const [hours, minutes] = time.split(':').map(Number);
-                if (isNaN(hours) || isNaN(minutes) || hours < 0 || hours > 23 || minutes < 0 || minutes > 59) {
+                // Check if time is in the correct format (if provided)
+                if (time && !time.match(/^(0?[1-9]|1[0-2]):[0-5][0-9] (AM|PM)$/i)) {
                     interaction.reply({
-                        content: "Please provide a valid time in the format HH:MM.",
+                        content: "Please provide a valid time in the format HH:MM AM/PM.",
                         ephemeral: true
                     });
                     return;
-                } else {
-                    list.remindTime = time;
-                    await list.save();
-                    interaction.reply({
-                        content: `Daily reminder time set to ${time}.`
-                    });
-                }                
+                }
+
+                // Convert HH:MM AM/PM to 24-hour format
+                const timezone = list.timezone;
+                let [hours, minutes] = time.split(':');
+                hours = parseInt(hours);
+                minutes = parseInt(minutes.slice(0, 2));
+                if (time.includes('PM') && hours < 12) hours += 12;
+                if (time.includes('AM') && hours == 12) hours = 0;
+                
+                // If hour is negative, add 24 to get the correct hour; if hour is greater than 23, subtract 24
+                hours -= timezone;
+                if (hours < 0) {
+                    hours += 24;
+                }
+                // Set the remindTime to the new time
+                list.remindTime = new Date().setUTCHours(hours, minutes, 0, 0) + 86400000;
+                await list.save();
+                interaction.reply({
+                    content: `Daily reminder time set to ${time}.`
+                });
+                            
             }
         } catch (e) {
             interaction.reply({
