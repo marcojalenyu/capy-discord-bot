@@ -87,9 +87,25 @@ module.exports = {
                 // Edit the attribute of the reminder
                 switch (attribute) {
                     case 'category':
+                        // Check if there is already a reminder with the same category and name
+                        if (await Reminder.findOne({ listId: list._id, category: value, name: reminder.name })) {
+                            interaction.reply({
+                                content: "A reminder with the same category and name already exists.",
+                                ephemeral: true
+                            });
+                            return;
+                        }
                         reminder.category = value;
                         break;
                     case 'name':
+                        // Check if there is already a reminder with the same category and name
+                        if (await Reminder.findOne({ listId: list._id, category: reminder.category, name: value })) {
+                            interaction.reply({
+                                content: "A reminder with the same category and name already exists.",
+                                ephemeral: true
+                            });
+                            return;
+                        }
                         reminder.name = value;
                         break;
                     case 'description':
