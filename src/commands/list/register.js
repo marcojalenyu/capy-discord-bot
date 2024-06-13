@@ -50,7 +50,7 @@ module.exports = {
                 }
                 newList.timezone = timezone;
                 // Add by 1 day to prevent immediate reminder
-                newList.remindTime = new Date().setUTCHours(9-timezone, 0, 0, 0) + 86400000;
+                newList.remindTime = new Date().setUTCHours(0, 0, 0, 0) + 86400000 + ((9 - timezone) * 3600000);
                 await newList.save();
                 // format the reminder time to HH:MM AM/PM
                 const formattedTime = new Date(newList.remindTime).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });

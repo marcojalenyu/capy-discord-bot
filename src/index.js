@@ -20,7 +20,6 @@ const client = new Client({
         mongoose.connect(process.env.MONGODB_URI);
         console.log('Connected to MongoDB');
         eventHandler(client);
-        
         // Checks if it is time to remind the user (every minute)
         setInterval(async () => {
             const now = new Date();
@@ -30,11 +29,12 @@ const client = new Client({
                 console.log("Updating reminders for list: ", list._id);
                 updateReminders(client, list);
                 // Set the remindTime to the next day
-                list.remindTime += 86400000;
+                const [hours, minutes] = [list.remindTime.getUTCHours(), list.remindTime.getUTCMinutes()];
+                list.remindTime = new Date().setUTCHours(hours, minutes, 0, 0) + 86400000;
+                list.markModified('remindTime');
                 await list.save();
             }
         }, 60 * 1000);
-    
     } catch (error) {
         console.error('Error connecting to MongoDB');
     }
