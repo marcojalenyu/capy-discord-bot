@@ -24,14 +24,15 @@ const client = new Client({
         // Checks if it is time to remind the user (every minute)
         setInterval(async () => {
             const now = new Date();
-            const currentTime = `${now.getHours()}:${now.getMinutes()}`;
-            const lists = await List.find({ remindTime: currentTime });
-
+            // Find lists whose remindTime is less than or equal to the current time
+            const lists = await List.find({ remindTime: { $lte: now } });
             for (const list of lists) {
                 console.log("Updating reminders for list: ", list._id);
                 updateReminders(client, list);
+                // Set the remindTime to the next day
+                list.remindTime += 86400000;
+                await list.save();
             }
-            
         }, 60 * 1000);
     
     } catch (error) {
