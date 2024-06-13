@@ -2,7 +2,7 @@ const List = require("../../models/List");
 
 module.exports = {
     name: 'channel',
-    description: 'Change the channel where the daily list is sent.',
+    description: 'Set the daily reminder channel to this one.',
 
     callback: async (client, interaction) => {
         try {

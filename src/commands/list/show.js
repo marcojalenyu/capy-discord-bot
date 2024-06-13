@@ -13,7 +13,7 @@ module.exports = {
         },
         {
             name: 'deadline',
-            description: 'Display reminders with a specific deadline. Must follow MM/DD/YYYY format.',
+            description: 'Display reminders with a specific deadline. Follow MM/DD or MM/DD/YYYY format.',
             type: ApplicationCommandOptionType.String,
         }
     ],
@@ -36,6 +36,22 @@ module.exports = {
 
                 // Split the deadline into month, day, and year
                 let [month, day, year] = deadline ? deadline.split('/').map(Number) : [null, null, null];
+                // Check if the deadline is in the correct format
+                if (deadline && (isNaN(month) || isNaN(day) || month < 1 || month > 12 || day < 1 || day > 31 || (year && (isNaN(year) || year.length != 4)))){
+                    interaction.reply({
+                        content: "Please provide a valid deadline in the format MM/DD or MM/DD/YYYY.",
+                        ephemeral: true
+                    });
+                    return;
+                }
+                // If no year is provided, set the year to the current year (if the deadline has not passed)
+                if (!year) {
+                    if (new Date().getMonth() + 1 > month || (new Date().getMonth() + 1 == month && new Date().getDate() > day)) {
+                        year = new Date().getFullYear() + 1;
+                    } else {
+                        year = new Date().getFullYear();
+                    }
+                }
 
                 // If category and deadline are not provided, show all reminders
                 if (category === null && deadline === null) {
@@ -45,10 +61,16 @@ module.exports = {
                 } else if (category === null && deadline) {
                     const startOfDay = new Date(Date.UTC(year, month - 1, day, 0, 0, 0));
                     const endOfDay = new Date(Date.UTC(year, month - 1, day, 23, 59, 59));
+                    // Adjust the deadline to the user's timezone
+                    startOfDay.setHours(startOfDay.getHours() - list.timezone);
+                    endOfDay.setHours(endOfDay.getHours() - list.timezone);
                     reminders = await Reminder.find({ listId: list._id, deadline: { $gte: startOfDay, $lte: endOfDay } });
                 } else {
                     const startOfDay = new Date(Date.UTC(year, month - 1, day, 0, 0, 0));
                     const endOfDay = new Date(Date.UTC(year, month - 1, day, 23, 59, 59));
+                    // Adjust the deadline to the user's timezone
+                    startOfDay.setHours(startOfDay.getHours() - list.timezone);
+                    endOfDay.setHours(endOfDay.getHours() - list.timezone);
                     reminders = await Reminder.find({ listId: list._id, category: category, deadline: { $gte: startOfDay, $lte: endOfDay } });
                 }
 
@@ -98,23 +120,26 @@ module.exports = {
                             if (reminder.deadline) {
                                 message += `${reminder.type === 'task' ? 'due' : 'on'} `;
                                 // Get the date components in UTC
-                                let year = reminder.deadline.getUTCFullYear();
-                                let month = reminder.deadline.getUTCMonth() + 1; // Months are 0-based
-                                let day = reminder.deadline.getUTCDate();
-                                // Format the date
+                                const deadline = new Date(reminder.deadline);
+                                deadline.setHours(deadline.getHours() + list.timezone);
+                                const [year, month, day] = [deadline.getUTCFullYear(), deadline.getUTCMonth() + 1, deadline.getUTCDate()];
                                 // If the deadline is today, display "today"
-                                if (today.getUTCFullYear() === year && today.getUTCMonth() === reminder.deadline.getUTCMonth() && today.getUTCDate() === reminder.deadline.getUTCDate()) {
+                                if (day === today.getUTCDate() && month === today.getUTCMonth() + 1 && year === today.getUTCFullYear()) {
                                     message += `today`;
-                                } else if (today.getUTCFullYear() === year && today.getUTCMonth() === reminder.deadline.getUTCMonth() && today.getUTCDate() === reminder.deadline.getUTCDate() - 1) {
+                                } else if (day === today.getUTCDate() + 1 && month === today.getUTCMonth() + 1 && year === today.getUTCFullYear()){
                                     message += `tomorrow`;
                                 } else {
                                     message += `${month}/${day}`;
+                                    // If the year is not the current year, display the year
+                                    if (year !== today.getUTCFullYear()) {
+                                        message += `/${year}`;
+                                    }
                                 }
                                 // Display time 
                                 let timeOptions = { hour: '2-digit', minute: '2-digit', timeZone: 'UTC' };
                                 // If time is not 23:59:59, display the time
-                                if (reminder.deadline.getUTCHours() !== 23 || reminder.deadline.getUTCMinutes() !== 59 || reminder.deadline.getUTCSeconds() !== 59) {
-                                    message += `, ${reminder.deadline.toLocaleTimeString('en-US', timeOptions)}`;
+                                if (deadline.getUTCHours() !== 23 || deadline.getUTCMinutes() !== 59 || deadline.getUTCSeconds() !== 59) {
+                                    message += `, ${deadline.toLocaleTimeString('en-US', timeOptions)}`;
                                 }
                             }
                             message += `\n`;
