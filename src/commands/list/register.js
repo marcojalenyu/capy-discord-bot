@@ -53,7 +53,9 @@ module.exports = {
                 newList.remindTime = new Date().setUTCHours(0, 0, 0, 0) + 86400000 + ((9 - timezone) * 3600000);
                 await newList.save();
                 // format the reminder time to HH:MM AM/PM
-                const formattedTime = new Date(newList.remindTime - timezone * 3600000).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+                const displayedTime = new Date(newList.remindTime);
+                displayedTime.setHours(displayedTime.getHours() + timezone);
+                const formattedTime = displayedTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', timeZone: 'UTC'});
                 interaction.reply({ content: `List registered at UTC ${timezone}. Daily reminder time: ${formattedTime}.` });
             }
         } catch (e) {
