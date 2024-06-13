@@ -96,14 +96,52 @@ module.exports = {
                         reminder.description = value;
                         break;
                     case 'deadline':
-                        const [month, day, year] = value.split('/');
+                        // Split the deadline into month, day, and year
+                        let [month, day, year] = value.split('/');
+                        // Check if the deadline is in the correct format
+                        if (isNaN(month) || isNaN(day) || month < 1 || month > 12 || day < 1 || day > 31 || (year && (isNaN(year) || year.length != 4))){
+                            interaction.reply({
+                                content: "Please provide a valid deadline in the format MM/DD or MM/DD/YYYY.",
+                                ephemeral: true
+                            });
+                            return;
+                        }
+                        // If no year is provided, set the year to the current year (if the deadline has not passed)
+                        if (!year) {
+                            if (new Date().getMonth() + 1 > month || (new Date().getMonth() + 1 == month && new Date().getDate() > day)) {
+                                year = new Date().getFullYear() + 1;
+                            } else {
+                                year = new Date().getFullYear();
+                            }
+                        }
+                        // Set the deadline of the reminder
                         reminder.deadline = new Date(Date.UTC(year, month - 1, day));
-                        reminder.deadline.setUTCHours(23);
+                        // Set to 23:59:59
+                        const timezone = list.timezone;
+                        let finalHour = 23 - timezone;
+                        if (finalHour > 23) finalHour -= 24;
+                        reminder.deadline.setUTCHours(finalHour);
                         reminder.deadline.setUTCMinutes(59);
                         reminder.deadline.setUTCSeconds(59);
                         break;
                     case 'time':
-                        const [hours, minutes] = value.split(':').map(Number);
+                        // Check if time is in the correct format
+                        if (!value.match(/^(0?[1-9]|1[0-2]):[0-5][0-9] (AM|PM)$/i)) {
+                            interaction.reply({
+                                content: "Please provide a valid time in the format HH:MM AM/PM.",
+                                ephemeral: true
+                            });
+                            return;
+                        }
+                        // Convert the time to 24-hour format
+                        let [hours, minutes] = value.split(':');
+                        hours = parseInt(hours);
+                        minutes = parseInt(minutes.slice(0, 2));
+                        if (value.includes('PM') && hours < 12) hours += 12;
+                        if (value.includes('AM') && hours == 12) hours = 0;
+                        // If hour is negative, add 24 to get the correct hour; if hour is greater than 23, subtract 24
+                        hours -= list.timezone;
+                        if (hours < 0) hours += 24;
                         reminder.deadline.setUTCHours(hours);
                         reminder.deadline.setUTCMinutes(minutes);
                         reminder.deadline.setUTCSeconds(59);
