@@ -2,6 +2,8 @@
 
 With a simple Register, Capy, and Paste, Capy can remind you about your tasks daily while in his natural habitat!
 
+<img src="https://github.com/Maracoo/capy-discord-bot/blob/main/src/assets/capy-pfp.jpg" width="25%">
+
 [Click here to invite a Capy to your server!](https://discord.com/oauth2/authorize?client_id=1186253254665981992)
 
 For questions and discussions: [Join the support server!](https://discord.gg/zHpKSBa9hb)
