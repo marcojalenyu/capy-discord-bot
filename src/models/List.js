@@ -25,8 +25,14 @@ const listSchema = new Schema({
         required: true
     },
     remindTime: {
-        type: String,
-        default: '09:00'
+        type: Date,
+        default: null,
+        required: true
+    },
+    timezone: {
+        type: Number,
+        default: 0,
+        required: true
     }
 });
 
