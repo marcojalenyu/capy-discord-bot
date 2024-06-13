@@ -42,23 +42,26 @@ module.exports = async (client, list) => {
                     if (reminder.deadline) {
                         message += `${reminder.type === 'task' ? 'due' : 'on'} `;
                         // Get the date components in UTC
-                        let year = reminder.deadline.getUTCFullYear();
-                        let month = reminder.deadline.getUTCMonth() + 1; // Months are 0-based
-                        let day = reminder.deadline.getUTCDate();
-                        // Format the date
+                        const deadline = new Date(reminder.deadline);
+                        deadline.setHours(deadline.getHours() + list.timezone);
+                        const [year, month, day] = [deadline.getUTCFullYear(), deadline.getUTCMonth() + 1, deadline.getUTCDate()];
                         // If the deadline is today, display "today"
-                        if (today.getUTCFullYear() === year && today.getUTCMonth() === reminder.deadline.getUTCMonth() && today.getUTCDate() === reminder.deadline.getUTCDate()) {
+                        if (day === today.getUTCDate() && month === today.getUTCMonth() + 1 && year === today.getUTCFullYear()) {
                             message += `today`;
-                        } else if (today.getUTCFullYear() === year && today.getUTCMonth() === reminder.deadline.getUTCMonth() && today.getUTCDate() === reminder.deadline.getUTCDate() - 1) {
+                        } else if (day === today.getUTCDate() + 1 && month === today.getUTCMonth() + 1 && year === today.getUTCFullYear()){
                             message += `tomorrow`;
                         } else {
                             message += `${month}/${day}`;
+                            // If the year is not the current year, display the year
+                            if (year !== today.getUTCFullYear()) {
+                                message += `/${year}`;
+                            }
                         }
                         // Display time 
                         let timeOptions = { hour: '2-digit', minute: '2-digit', timeZone: 'UTC' };
                         // If time is not 23:59:59, display the time
-                        if (reminder.deadline.getUTCHours() !== 23 || reminder.deadline.getUTCMinutes() !== 59 || reminder.deadline.getUTCSeconds() !== 59) {
-                            message += `, ${reminder.deadline.toLocaleTimeString('en-US', timeOptions)}`;
+                        if (deadline.getUTCHours() !== 23 || deadline.getUTCMinutes() !== 59 || deadline.getUTCSeconds() !== 59) {
+                            message += `, ${deadline.toLocaleTimeString('en-US', timeOptions)}`;
                         }
                     }
                     message += `\n`;

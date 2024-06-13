@@ -29,6 +29,7 @@ module.exports = async (client, list) => {
                 user.send(message);
             }
         }
+
     } catch (e) {
         console.error(e);
     }
